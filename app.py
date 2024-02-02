@@ -1,1 +1,33 @@
-{"metadata":{"kernelspec":{"language":"python","display_name":"Python 3","name":"python3"},"language_info":{"name":"python","version":"3.10.13","mimetype":"text/x-python","codemirror_mode":{"name":"ipython","version":3},"pygments_lexer":"ipython3","nbconvert_exporter":"python","file_extension":".py"},"kaggle":{"accelerator":"none","dataSources":[{"sourceId":7536633,"sourceType":"datasetVersion","datasetId":4388844}],"dockerImageVersionId":30646,"isInternetEnabled":true,"language":"python","sourceType":"script","isGpuEnabled":false}},"nbformat_minor":4,"nbformat":4,"cells":[{"cell_type":"code","source":"# %% [code] {\"execution\":{\"iopub.status.busy\":\"2024-02-02T06:23:18.185565Z\",\"iopub.execute_input\":\"2024-02-02T06:23:18.186002Z\",\"iopub.status.idle\":\"2024-02-02T06:23:18.218971Z\",\"shell.execute_reply.started\":\"2024-02-02T06:23:18.185969Z\",\"shell.execute_reply\":\"2024-02-02T06:23:18.217246Z\"}}\nimport streamlit as st\nimport pandas as pd\nimport geopandas as gpd\nimport folium\nfrom folium import Marker\nfrom streamlit_folium import st_folium\nimport branca.colormap as cm\n\n# %% [code] {\"execution\":{\"iopub.status.busy\":\"2024-02-02T06:21:43.962801Z\",\"iopub.execute_input\":\"2024-02-02T06:21:43.963221Z\",\"iopub.status.idle\":\"2024-02-02T06:21:43.978418Z\",\"shell.execute_reply.started\":\"2024-02-02T06:21:43.963190Z\",\"shell.execute_reply\":\"2024-02-02T06:21:43.977385Z\"}}\ndf_def = pd.read_csv('/kaggle/input/auberges-map/auberges_app.csv')\n\n# %% [code] {\"execution\":{\"iopub.status.busy\":\"2024-02-02T06:21:47.642290Z\",\"iopub.execute_input\":\"2024-02-02T06:21:47.642685Z\",\"iopub.status.idle\":\"2024-02-02T06:21:47.654360Z\",\"shell.execute_reply.started\":\"2024-02-02T06:21:47.642654Z\",\"shell.execute_reply\":\"2024-02-02T06:21:47.653209Z\"}}\nlinear = cm.LinearColormap([\"red\", \"orange\", \"yellow\", \"green\"], \n                           vmin=df_def['Score'].min(), \n                           vmax=df_def['Score'].max(),\n                           index=[0, 100, 350, 1000])\n\n# %% [code] {\"execution\":{\"iopub.status.busy\":\"2024-02-02T06:21:48.058898Z\",\"iopub.execute_input\":\"2024-02-02T06:21:48.059374Z\",\"iopub.status.idle\":\"2024-02-02T06:21:48.158593Z\",\"shell.execute_reply.started\":\"2024-02-02T06:21:48.059318Z\",\"shell.execute_reply\":\"2024-02-02T06:21:48.157678Z\"}}\nm = folium.Map(location=[40.547722,-5.155226], tiles='openstreetmap', zoom_start=6)\nfor idx, row in df_def.iterrows():\n    folium.CircleMarker([row['Latitude'], \n            row['Longitude']], \n           popup=[str('Ville : ') + row['Ville'],\n                  str('Score : ') + str(row['Score']), \n                  str('Requetes : ') + str(row['Nombre de requetes mensuelles totales']),\n                  str('Nb Hotel : ') + str(row['Nombre etablissement booking'])],\n           radius=5,\n           fill=True,\n           fill_opacity=0.8,\n           color = linear(row.Score),).add_to(m)\n\n# %% [code] {\"execution\":{\"iopub.status.busy\":\"2024-02-02T06:22:34.866413Z\",\"iopub.execute_input\":\"2024-02-02T06:22:34.866874Z\",\"iopub.status.idle\":\"2024-02-02T06:22:34.904423Z\",\"shell.execute_reply.started\":\"2024-02-02T06:22:34.866823Z\",\"shell.execute_reply\":\"2024-02-02T06:22:34.903136Z\"}}\nst_data = st_folium(m)\n\n# %% [code]\n","metadata":{"_uuid":"b390e573-0999-4020-9256-53bf588582f4","_cell_guid":"d037a132-5d65-4c93-9fd3-a6c65abe8cf9","collapsed":false,"jupyter":{"outputs_hidden":false},"trusted":true},"execution_count":null,"outputs":[]}]}
+import streamlit as st
+import pandas as pd
+import geopandas as gpd
+import folium
+from folium import Marker
+from streamlit_folium import st_folium
+import branca.colormap as cm
+
+# %% [code] {"execution":{"iopub.status.busy":"2024-02-02T06:21:43.962801Z","iopub.execute_input":"2024-02-02T06:21:43.963221Z","iopub.status.idle":"2024-02-02T06:21:43.978418Z","shell.execute_reply.started":"2024-02-02T06:21:43.963190Z","shell.execute_reply":"2024-02-02T06:21:43.977385Z"}}
+df_def = pd.read_csv('/kaggle/input/auberges-map/auberges_app.csv')
+
+# %% [code] {"execution":{"iopub.status.busy":"2024-02-02T06:21:47.642290Z","iopub.execute_input":"2024-02-02T06:21:47.642685Z","iopub.status.idle":"2024-02-02T06:21:47.654360Z","shell.execute_reply.started":"2024-02-02T06:21:47.642654Z","shell.execute_reply":"2024-02-02T06:21:47.653209Z"}}
+linear = cm.LinearColormap(["red", "orange", "yellow", "green"], 
+                           vmin=df_def['Score'].min(), 
+                           vmax=df_def['Score'].max(),
+                           index=[0, 100, 350, 1000])
+
+# %% [code] {"execution":{"iopub.status.busy":"2024-02-02T06:21:48.058898Z","iopub.execute_input":"2024-02-02T06:21:48.059374Z","iopub.status.idle":"2024-02-02T06:21:48.158593Z","shell.execute_reply.started":"2024-02-02T06:21:48.059318Z","shell.execute_reply":"2024-02-02T06:21:48.157678Z"}}
+m = folium.Map(location=[40.547722,-5.155226], tiles='openstreetmap', zoom_start=6)
+for idx, row in df_def.iterrows():
+    folium.CircleMarker([row['Latitude'], 
+            row['Longitude']], 
+           popup=[str('Ville : ') + row['Ville'],
+                  str('Score : ') + str(row['Score']), 
+                  str('Requetes : ') + str(row['Nombre de requetes mensuelles totales']),
+                  str('Nb Hotel : ') + str(row['Nombre etablissement booking'])],
+           radius=5,
+           fill=True,
+           fill_opacity=0.8,
+           color = linear(row.Score),).add_to(m)
+
+# %% [code] {"execution":{"iopub.status.busy":"2024-02-02T06:22:34.866413Z","iopub.execute_input":"2024-02-02T06:22:34.866874Z","iopub.status.idle":"2024-02-02T06:22:34.904423Z","shell.execute_reply.started":"2024-02-02T06:22:34.866823Z","shell.execute_reply":"2024-02-02T06:22:34.903136Z"}}
+st_data = st_folium(m)
